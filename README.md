@@ -145,8 +145,8 @@ This project is licensed under the [MIT License](LICENSE).
 
 ## 🙋‍♂️ Author
 
-Developed by **\[Sumer Pasha]**
-GitHub: [@1sumer](https://github.com/1sumer)
-LinkedIn: [Sumer Pasha](https://www.linkedin.com/in/sumer-pasha-70884a152/)
+Developed by **\[Awab Idris]**
+GitHub: [@Pinkkygold](https://github.com/Pinkkygold)
+LinkedIn: [Awab Idris](www.linkedin.com/in/awab-abdalla)
 
 
