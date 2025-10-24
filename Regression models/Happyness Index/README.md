@@ -1,30 +1,25 @@
+
 # 🧠 Happiness Predictor Web Application
 
-A lightweight, interactive web application built using **Flask** and **scikit-learn** that predicts an individual's happiness score based on their income. This application utilizes a simple **Linear Regression** model and is fully deployable on **Render**.
+A lightweight, interactive web application built using **Flask** and **scikit-learn** that predicts an individual's happiness score based on their income. This application utilizes a **Linear Regression** model and is fully deployable on **Render**.
+
+Live Demo: [https://machine-learning-projects-d0gh.onrender.com/predict](https://machine-learning-projects-d0gh.onrender.com/predict)
 
 ---
 
 ## ✨ Features
 
-- 🔍 Predict happiness based on income
-- 🧠 Machine Learning model built with `scikit-learn`
-- 🌐 Frontend using HTML and CSS
-- ⚙️ Backend using Flask
-- ☁️ Cloud deployment ready (Render-compatible)
-
----
-
-## 📊 Demo
-
-> Add a screenshot or a live link here if available  
-> Example: `https://happiness-predictor.onrender.com`
+* 🔍 Predict happiness based on income
+* 🧠 Machine Learning model built with `scikit-learn`
+* 🌐 Frontend using HTML and CSS
+* ⚙️ Backend using Flask
+* ☁️ Cloud deployment ready (Render-compatible)
 
 ---
 
 ## 📁 Project Structure
 
 ```
-
 happiness-predictor/
 │
 ├── app.py                 # Main Flask application
@@ -36,22 +31,19 @@ happiness-predictor/
 │   └── index.html         # Frontend HTML
 │
 └── static/
-└── style.css          # CSS styling
-
-````
+    └── style.css          # CSS styling
+```
 
 ---
 
 ## ⚙️ Getting Started
 
-Follow the instructions below to set up and run the project locally.
-
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/happiness-predictor.git
-cd happiness-predictor
-````
+git clone https://github.com/Pinkkygold/Machine-Learning-projects.git
+cd "Regression models/Happyness Index"
+```
 
 ### 2. Set Up Virtual Environment
 
@@ -59,6 +51,8 @@ cd happiness-predictor
 python -m venv venv
 # Windows
 venv\Scripts\activate
+# macOS/Linux
+source venv/bin/activate
 ```
 
 ### 3. Install Dependencies
@@ -67,26 +61,25 @@ venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 4. Run the Application
+### 4. Run the Application Locally
 
 ```bash
 python app.py
 ```
 
-Navigate to `http://127.0.0.1:5000` in your browser to use the app.
+Visit `http://127.0.0.1:5000` in your browser to use the app.
 
 ---
 
 ## 🧠 Model Overview
 
-This project uses a simple **Linear Regression** model trained on synthetic data to predict happiness scores based on income.
-
+This project uses a simple **Linear Regression** model trained on sample data to predict happiness scores based on income.
 
 ---
 
 ## ☁️ Deployment on Render
 
-### 1. Create `render.yaml`
+1. **Create `render.yaml`**
 
 ```yaml
 services:
@@ -99,27 +92,23 @@ services:
     region: oregon
 ```
 
-### 2. Create a GitHub Repository
+2. **Push your project to GitHub**
 
-* Push your local project to GitHub.
+3. **Deploy to Render**
 
-### 3. Deploy to Render
+   * Go to [Render.com](https://render.com)
+   * Click **“New Web Service”**
+   * Connect your GitHub repository
+   * Set **Root Directory**: `Regression models/Happyness Index`
+   * Start command: `gunicorn app:app`
+   * Environment: Python
+   * Render will automatically build and deploy your app
 
-* Go to [https://render.com](https://render.com)
-* Click "New Web Service"
-* Connect your GitHub repo
-* Fill in the details:
-
-  * **Start command**: `gunicorn app:app`
-  * **Environment**: Python
-  * **Build command**: (optional) `pip install -r requirements.txt`
-* Render will automatically build and deploy your app.
+**Live App:** [https://machine-learning-projects-d0gh.onrender.com/predict](https://machine-learning-projects-d0gh.onrender.com/predict)
 
 ---
 
 ## ✅ Requirements
-
-Your `requirements.txt` should include:
 
 ```txt
 Flask==2.3.3
@@ -132,22 +121,21 @@ numpy==1.26.4
 
 ## 🔒 Security Notes
 
-* Input validation is handled minimally. Consider sanitizing inputs more rigorously in production.
-* Avoid using `pickle` for untrusted data sources.
+* Minimal input validation is included. For production, consider sanitizing inputs more thoroughly.
+* Avoid using `pickle` with untrusted data sources.
 
 ---
 
 ## 📄 License
 
-This project is licensed under the [MIT License](LICENSE).
+MIT License
 
 ---
 
 ## 🙋‍♂️ Author
 
-Developed by **\[Awab Idris]**
+**Awab Idris**
 GitHub: [@Pinkkygold](https://github.com/Pinkkygold)
-LinkedIn: [Awab Idris](www.linkedin.com/in/awab-abdalla)
-
+LinkedIn: [Awab Idris](https://www.linkedin.com/in/awab-abdalla)
 
 
