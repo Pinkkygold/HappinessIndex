@@ -3,8 +3,7 @@
 
 A lightweight, interactive web application built using **Flask** and **scikit-learn** that predicts an individual's happiness score based on their income. This application utilizes a **Linear Regression** model and is fully deployable on **Render**.
 
-Live Demo: [https://machine-learning-projects-d0gh.onrender.com/predict](https://machine-learning-projects-d0gh.onrender.com/predict)
-
+Live Demo:https://machine-learning-projects-d0gh.onrender.com
 ---
 
 ## ✨ Features
@@ -137,5 +136,6 @@ MIT License
 **Awab Idris**
 GitHub: [@Pinkkygold](https://github.com/Pinkkygold)
 LinkedIn: [Awab Idris](https://www.linkedin.com/in/awab-abdalla)
+
 
 
