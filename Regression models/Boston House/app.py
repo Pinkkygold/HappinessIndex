@@ -1,54 +1,83 @@
-# app.py
 from flask import Flask, render_template, request, jsonify
 import numpy as np
 import pandas as pd
 import joblib
 import os
+import traceback
 
 app = Flask(__name__)
 
-# Global variable for model
+# Global model variable
 model = None
 
+
 def load_model():
-    """Load the trained model"""
+    """Load the trained model from the same directory as app.py"""
     global model
     try:
-        model = joblib.load('Boston_regression_model.pkl')
+        # Build absolute path
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        model_path = os.path.join(base_dir, "Boston_regression_model.pkl")
+
+        # Debug info (helpful for Render logs)
+        print(f"📂 Looking for model at: {model_path}")
+        print(f"📁 Current working directory: {os.getcwd()}")
+        print(f"📄 Files in base dir: {os.listdir(base_dir)}")
+
+        # Load model
+        model = joblib.load(model_path)
         print("✅ Boston Housing Model loaded successfully!")
         return True
     except FileNotFoundError as e:
-        print(f"❌ Error loading model file: {e}")
+        print(f"❌ Model file not found: {e}")
+        model = None
         return False
     except Exception as e:
         print(f"❌ Error loading model: {e}")
+        traceback.print_exc()
+        model = None
         return False
+
 
 def predict_medv(input_features_dict):
     """Predict MEDV using the trained model"""
+    global model
     try:
-        # Feature order must match training data
-        feature_order = ['CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE', 'DIS', 
-                        'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT']
+        if model is None:
+            raise RuntimeError("Model is not loaded. Please reload the app or check deployment files.")
+
+        feature_order = [
+            'CRIM', 'ZN', 'INDUS', 'CHAS', 'NOX', 'RM', 'AGE',
+            'DIS', 'RAD', 'TAX', 'PTRATIO', 'B', 'LSTAT'
+        ]
         
-        # Convert input dictionary to numpy array in correct order
         input_array = np.array([input_features_dict[feature] for feature in feature_order]).reshape(1, -1)
-        
+
         print(f"Input shape: {input_array.shape}")
         print(f"Input values: {input_array}")
-        
-        # Make prediction directly
+
         prediction = model.predict(input_array)
-        
         print(f"Raw prediction: {prediction[0]:.2f}")
-        
+
         return prediction[0]
-        
+
     except Exception as e:
         print(f"Prediction error: {e}")
-        import traceback
         traceback.print_exc()
         return None
+
+
+# Load the model when the app starts (important for Render)
+with app.app_context():
+    load_model()
+
+
+if __name__ == "__main__":
+    # Ensure model is loaded before starting the server
+    if model is None:
+        print("⚠️ Model not loaded at startup. Please check model path.")
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5001)))
+
 
 # Feature descriptions for the form
 feature_descriptions = {
