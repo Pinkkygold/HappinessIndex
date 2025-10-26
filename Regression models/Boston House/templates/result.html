@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediction Results - Boston Housing</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Prediction Results</h1>
+            <a href="/" class="back-link">← Back to Predictor</a>
+        </header>
+
+        <div class="content">
+            {% if error %}
+                <div class="error-message">
+                    <h2>❌ Prediction Error</h2>
+                    <p>{{ error }}</p>
+                </div>
+            {% else %}
+                <div class="prediction-result">
+                    <div class="prediction-card">
+                        <h2>Predicted House Price</h2>
+                        <div class="price-display">
+                            ${{ "{:,.0f}".format(prediction) }}
+                        </div>
+                        <p class="price-note">Median Value of Owner-Occupied Homes</p>
+                    </div>
+
+                    <div class="input-summary">
+                        <h3>Input Features Used</h3>
+                        <div class="features-grid">
+                            {% for feature, value in input_features.items() %}
+                            <div class="feature-item">
+                                <span class="feature-name">{{ feature }}:</span>
+                                <span class="feature-value">
+                                    {% if value is number and value % 1 == 0 %}
+                                        {{ "{:,.0f}".format(value) }}
+                                    {% elif value is number %}
+                                        {{ "{:,.3f}".format(value) }}
+                                    {% else %}
+                                        {{ value }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="prediction-info">
+                        <h3>💡 About This Prediction</h3>
+                        <p>This prediction represents the <strong>median home price</strong> for properties with these characteristics in the Boston area.</p>
+                        <p><em>Based on the classic Boston Housing Dataset with Linear Regression modeling. Model R² score: ~70-80%</em></p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="action-buttons">
+                <a href="/" class="btn btn-primary">Make Another Prediction</a>
+                <button onclick="window.print()" class="btn btn-secondary">Print Results</button>
+            </div>
+        </div>
+
+        <footer>
+            <p>Boston Housing Price Predictor | Built with Flask</p>
+        </footer>
+    </div>
+</body>
+</html>

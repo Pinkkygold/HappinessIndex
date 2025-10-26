@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston Housing Price Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏠 Boston Housing Price Predictor</h1>
+            <p class="subtitle">Predict the median value of owner-occupied homes in Boston</p>
+        </header>
+
+        <div class="content">
+            <div class="form-container">
+                <form action="/predict" method="POST" class="housing-form">
+                    <div class="form-grid">
+                        {% for feature, description in features.items() %}
+                        <div class="form-group">
+                            <label for="{{ feature }}" class="form-label">
+                                {{ feature }}
+                                <span class="tooltip">ℹ️
+                                    <span class="tooltiptext">{{ description }}</span>
+                                </span>
+                            </label>
+                            
+                            {% if feature == 'CHAS' %}
+                            <select id="{{ feature }}" name="{{ feature }}" class="form-input" required>
+                                <option value="0" {% if defaults[feature] == 0 %}selected{% endif %}>No (0)</option>
+                                <option value="1" {% if defaults[feature] == 1 %}selected{% endif %}>Yes (1)</option>
+                            </select>
+                            {% else %}
+                            <input type="number" 
+                                   id="{{ feature }}" 
+                                   name="{{ feature }}" 
+                                   step="any"
+                                   min="{{ ranges[feature][0] }}" 
+                                   max="{{ ranges[feature][1] }}" 
+                                   value="{{ defaults[feature] }}"
+                                   required
+                                   class="form-input">
+                            {% endif %}
+                            <small>Range: {{ ranges[feature][0] }} - {{ ranges[feature][1] }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Predict House Price</button>
+                        <button type="reset" class="btn btn-secondary">Reset to Defaults</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="info-section">
+                <h2>ℹ️ About This Model</h2>
+                <div class="info-card">
+                    <h3>Model Details</h3>
+                    <ul>
+                        <li><strong>Algorithm:</strong> Linear Regression</li>
+                        <li><strong>Target:</strong> Median Home Value (MEDV)</li>
+                        <li><strong>Features:</strong> 13 housing characteristics</li>
+                        <li><strong>Data:</strong> Boston Housing Dataset</li>
+                        <li><strong>Preprocessing:</strong> Removed missing values</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>How to Use</h3>
+                    <ol>
+                        <li>Adjust the feature values using the input fields</li>
+                        <li>For CHAS: Select 1 if property bounds Charles River, 0 otherwise</li>
+                        <li>Click "Predict House Price" to get the estimated price</li>
+                        <li>View the predicted house price on the results page</li>
+                    </ol>
+                </div>
+
+                <div class="info-card">
+                    <h3>💡 Key Features</h3>
+                    <ul>
+                        <li><strong>CRIM:</strong> Lower crime rates → Higher prices</li>
+                        <li><strong>RM:</strong> More rooms → Higher prices</li>
+                        <li><strong>LSTAT:</strong> Lower status % → Higher prices</li>
+                        <li><strong>CHAS:</strong> River proximity → Higher prices</li>
+                        <li><strong>PTRATIO:</strong> Lower pupil-teacher ratio → Higher prices</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Boston Housing Price Predictor | Built with Flask & Linear Regression</p>
+        </footer>
+    </div>
+</body>
+</html>
