@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ice Cream Sales - Polynomial Regression</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-ice-cream"></i> Ice Cream Sales Predictor</h1>
+            <p>Advanced Polynomial Regression Analysis</p>
+        </header>
+
+        <div class="dashboard">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3><i class="fas fa-database"></i> Total Records</h3>
+                    <p class="stat-number">{{ stats.total_records }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3><i class="fas fa-thermometer-half"></i> Avg Temperature</h3>
+                    <p class="stat-number">{{ "%.2f"|format(stats.avg_temperature) }}°C</p>
+                </div>
+                <div class="stat-card">
+                    <h3><i class="fas fa-chart-line"></i> Avg Sales</h3>
+                    <p class="stat-number">{{ "%.2f"|format(stats.avg_sales) }}</p>
+                </div>
+                <div class="stat-card">
+                    <h3><i class="fas fa-link"></i> Correlation</h3>
+                    <p class="stat-number">{{ "%.3f"|format(stats.correlation) }}</p>
+                </div>
+            </div>
+
+            <!-- Model Controls -->
+            <div class="controls-section">
+                <h2><i class="fas fa-sliders-h"></i> Model Controls</h2>
+                <div class="controls-grid">
+                    <div class="control-group">
+                        <label for="degreeSelect">Polynomial Degree:</label>
+                        <select id="degreeSelect" class="control-select">
+                            <option value="2">Degree 2 (Quadratic)</option>
+                            <option value="3">Degree 3 (Cubic)</option>
+                            <option value="4">Degree 4</option>
+                            <option value="5">Degree 5</option>
+                        </select>
+                        <button onclick="updateModel()" class="control-btn">
+                            <i class="fas fa-sync"></i> Update Model
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="performance-cards">
+                    <div class="performance-card">
+                        <h4>Model Performance</h4>
+                        <div class="performance-stats">
+                            <div class="performance-stat">
+                                <span class="label">R² Score:</span>
+                                <span class="value {{ 'good' if performance.r2_percentage > 80 else 'average' if performance.r2_percentage > 60 else 'poor' }}">
+                                    {{ "%.2f"|format(performance.r2_percentage) }}%
+                                </span>
+                            </div>
+                            <div class="performance-stat">
+                                <span class="label">MSE:</span>
+                                <span class="value">{{ "%.2f"|format(performance.mse) }}</span>
+                            </div>
+                            <div class="performance-stat">
+                                <span class="label">Polynomial Degree:</span>
+                                <span class="value">{{ performance.degree }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Plot -->
+            <div class="chart-section">
+                <h2><i class="fas fa-chart-line"></i> Polynomial Regression Analysis</h2>
+                <div id="chartContainer">
+                    <img src="data:image/png;base64,{{ plot_url }}" alt="Polynomial Regression Plot" class="chart" id="regressionChart">
+                </div>
+            </div>
+
+            <!-- Prediction Section -->
+            <div class="prediction-section">
+                <h2><i class="fas fa-calculator"></i> Sales Prediction</h2>
+                <div class="prediction-controls">
+                    <div class="input-group">
+                        <label for="temperatureInput">Enter Temperature (°C):</label>
+                        <input type="number" id="temperatureInput" step="0.1" placeholder="e.g., 10, 25, 30..." class="input-field">
+                    </div>
+                    <button onclick="predictSales()" class="predict-btn">
+                        <i class="fas fa-bolt"></i> Predict Sales
+                    </button>
+                </div>
+                <div id="predictionResult" class="prediction-result"></div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="data-section">
+                <h2><i class="fas fa-table"></i> Sample Data</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Temperature (°C)</th>
+                                <th>Ice Cream Sales (units)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in data[:8] %}
+                            <tr>
+                                <td>{{ "%.2f"|format(row['Temperature (°C)']) }}</td>
+                                <td>{{ "%.2f"|format(row['Ice Cream Sales (units)']) }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <p class="data-note">Showing 8 of {{ stats.total_records }} records</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Powered by Polynomial Regression | Deployed on Render with Flask & Gunicorn</p>
+    </footer>
+
+    <script>
+        let currentDegree = 2;
+
+        async function updateModel() {
+            const degreeSelect = document.getElementById('degreeSelect');
+            const newDegree = parseInt(degreeSelect.value);
+            
+            try {
+                const response = await fetch('/update_model', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ degree: newDegree })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentDegree = newDegree;
+                    // Update chart
+                    document.getElementById('regressionChart').src = 'data:image/png;base64,' + data.plot_url;
+                    
+                    // Update performance metrics
+                    updatePerformanceMetrics(data);
+                    
+                    showNotification('Model updated successfully!', 'success');
+                } else {
+                    showNotification('Error updating model: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        async function predictSales() {
+            const temperature = document.getElementById('temperatureInput').value;
+            const resultDiv = document.getElementById('predictionResult');
+            
+            if (!temperature) {
+                showNotification('Please enter a temperature value', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        temperature: parseFloat(temperature),
+                        degree: currentDegree
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update chart with prediction point
+                    document.getElementById('regressionChart').src = 'data:image/png;base64,' + data.plot_url;
+                    
+                    // Show prediction result
+                    resultDiv.innerHTML = `
+                        <div class="prediction-success">
+                            <div class="prediction-header">
+                                <i class="fas fa-check-circle"></i>
+                                <h4>Prediction Result</h4>
+                            </div>
+                            <div class="prediction-details">
+                                <div class="prediction-item">
+                                    <span class="label">Temperature:</span>
+                                    <span class="value">${data.temperature}°C</span>
+                                </div>
+                                <div class="prediction-item">
+                                    <span class="label">Predicted Sales:</span>
+                                    <span class="value highlight">${data.predicted_sales} units</span>
+                                </div>
+                                <div class="prediction-item">
+                                    <span class="label">Model R²:</span>
+                                    <span class="value">${data.r2_percentage.toFixed(2)}%</span>
+                                </div>
+                                <div class="prediction-item">
+                                    <span class="label">Polynomial Degree:</span>
+                                    <span class="value">${data.degree}</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    showNotification('Prediction completed successfully!', 'success');
+                } else {
+                    showNotification('Prediction error: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showNotification('Network error: ' + error.message, 'error');
+            }
+        }
+
+        function updatePerformanceMetrics(data) {
+            // You can update performance metrics display here if needed
+            console.log('Model performance updated:', data);
+        }
+
+        function showNotification(message, type) {
+            // Simple notification system
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <span>${message}</span>
+                <button onclick="this.parentElement.remove()">&times;</button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Allow Enter key to trigger prediction
+        document.getElementById('temperatureInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                predictSales();
+            }
+        });
+
+        // Initialize with degree 2
+        document.addEventListener('DOMContentLoaded', function() {
+            currentDegree = 2;
+        });
+    </script>
+</body>
+</html>
