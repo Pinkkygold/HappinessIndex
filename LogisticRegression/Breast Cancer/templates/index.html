@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breast Cancer Detection</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="container">
+    <h1>🎗️ Simple Breast Cancer Predictor</h1>
+    <p>Enter the <strong>mean radius</strong> value to predict whether a tumor is <em>benign</em> or <em>malignant</em>.</p>
+
+    <form action="{{ url_for('predict') }}" method="POST">
+      <input type="number" step="any" name="mean_radius" placeholder="Mean Radius" required>
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if result %}
+      <div class="result" style="color: {{ color }};">
+        <h2>{{ result }}</h2>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>
